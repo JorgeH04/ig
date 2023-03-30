@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Main from '../Componentes/Main';
 import imagenSignup from '../imagenes/signup.png';         
-import ErrorMsg from './ErrorMsg' 
+//import ErrorMsg from './ErrorMsg' 
 
 export default function Signup({ signup, mostrarError }) {
   const [usuario, setUsuario] = useState({
@@ -12,7 +12,7 @@ export default function Signup({ signup, mostrarError }) {
     bio: '',
     nombre: ''
   });
-  const [error, setError] = useState('')
+ // const [error, setError] = useState('')
 
 
   function handleInputChange(e) {
@@ -30,12 +30,8 @@ export default function Signup({ signup, mostrarError }) {
     try {
       await signup(usuario);
     } catch (error) {
-      //mostrarError(error.response.data);
-      setError(error)
-      setTimeout( ()=>{
-          setError('')
-      },6000)
-      console.log(error);
+      mostrarError(error.response.data);
+     
     }
 
     // let { error } = response.data
@@ -65,7 +61,6 @@ export default function Signup({ signup, mostrarError }) {
           <p className="FormContainer__info">
             Regístrate para que veas el clon de Instagram
           </p>
-          {error !== '' ?  <ErrorMsg info={error}/>: ''}
           <form onSubmit={handleSubmit}>
             <input
               type="email"
