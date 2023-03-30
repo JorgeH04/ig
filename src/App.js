@@ -46,7 +46,7 @@ export default function App() {
         return;
       }
       try {
-        const { data: usuario } = await Axios.get('/api/usuarios/whoami');
+        const { data: usuario } = await Axios.get('https://igback.herokuapp.com/api/usuarios/whoami');
         setUsuario(usuario);
         setCargandoUsuario(false);
       } catch (error) {
@@ -61,7 +61,7 @@ export default function App() {
 
 
   async function login(email, password) {
-    const { data } = await Axios.post('/api/usuarios/login', {
+    const { data } = await Axios.post('https://igback.herokuapp.com/api/usuarios/login', {
       email,
       password
     });
@@ -69,7 +69,7 @@ export default function App() {
     setToken(data.token);
   }
   async function signup(usuario) {
-    const { data } = await Axios.post('/api/usuarios/signup', usuario);
+    const { data } = await Axios.post('https://igback.herokuapp.com/api/usuarios/signup', usuario);
     setUsuario(data.usuario);
     setToken(data.token);
   }
