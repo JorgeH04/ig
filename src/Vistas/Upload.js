@@ -23,7 +23,8 @@ export default function Upload({ history, mostrarError }) {
           'Content-Type': file.type
         }
       };
-      const { data } = await Axios.post('/api/posts/upload', file, config);
+      const { data } = await Axios.post('https://igback.herokuapp.com/api/posts/upload', file, config);
+    //  const { data } = await Axios.post('/api/posts/upload', file, config);
       setImagenUrl(data.url);
       setSubiendoImagen(false);
     } catch (error) {
@@ -56,7 +57,8 @@ export default function Upload({ history, mostrarError }) {
         title,
         url: imagenUrl
       };
-      await Axios.post('/api/posts', body);
+      await Axios.post('https://igback.herokuapp.com/api/posts', body);
+     // await Axios.post('/api/posts', body);
       setEnviandoPost(false);
       history.push('/');
     } catch (error) {

@@ -24,10 +24,15 @@ export default function Perfil({ mostrarError, usuario, match, logout }) {
     async function cargarPostsYUsuario() {
       try {
         setCargandoPefil(true);
-        const { data: usuario } = await Axios.get(`/api/usuarios/${username}`);
+        const { data: usuario } = await Axios.get(`https://igback.herokuapp.com/api/usuarios/${username}`);
         const { data: posts } = await Axios.get(
-          `/api/posts/usuario/${usuario._id}`
+          `https://igback.herokuapp.com/api/posts/usuario/${usuario._id}`
         );
+
+        // const { data: usuario } = await Axios.get(`/api/usuarios/${username}`);
+        // const { data: posts } = await Axios.get(
+        //   `/api/posts/usuario/${usuario._id}`
+        // );
         setUsuarioDueñoDelPerfil(usuario);
         setPosts(posts);
         setCargandoPefil(false);

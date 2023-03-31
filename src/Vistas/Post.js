@@ -20,7 +20,8 @@ export default function PostVista({ mostrarError, match, usuario }) {
   useEffect(() => {
     async function cargarPost() {
       try {
-        const { data: post } = await Axios.get(`/api/posts/${postId}`);
+        const { data: post } = await Axios.get(`https://igback.herokuapp.com/api/posts/${postId}`);
+       // const { data: post } = await Axios.get(`/api/posts/${postId}`);
         setPost(post);
         setLoading(false);
       } catch (error) {
