@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Main from '../Componentes/Main';
-import Loading from '../Componentes/Loading';
-import Avatar from '../Componentes/Avatar';
-import Comentar from '../Componentes/Comentar';
-import BotonLike from '../Componentes/BotonLike';
-import RecursoNoExiste from '../Componentes/RecursoNoExiste';
+import Main from '../Components/Main';
+import Loading from '../Components/Loading';
+import Avatar from '../Components/Avatar';
+import Comentar from '../Components/Comentar';
+import BotonLike from '../Components/BotonLike';
+import RecursoNoExiste from '../Components/RecursoNoExiste';
 import { Link } from 'react-router-dom';
 import Axios from 'axios';
 import { toggleLike, comentar } from '../Helpers/post-helpers';
@@ -16,12 +16,13 @@ export default function PostVista({ mostrarError, match, usuario }) {
   const [loading, setLoading] = useState(true);
   const [postNoExiste, setPostNoExiste] = useState(false);
   const [enviandoLike, setEnviandoLike] = useState(false);
+
   
   useEffect(() => {
     async function cargarPost() {
       try {
-        const { data: post } = await Axios.get(`https://igback.herokuapp.com/api/posts/${postId}`);
-       // const { data: post } = await Axios.get(`/api/posts/${postId}`);
+       // const { data: post } = await Axios.get(`https://igback.herokuapp.com/api/posts/${postId}`);
+        const { data: post } = await Axios.get(`/api/posts/${postId}`);
         setPost(post);
         setLoading(false);
       } catch (error) {
@@ -38,10 +39,16 @@ export default function PostVista({ mostrarError, match, usuario }) {
     }
     cargarPost();
   }, [postId]);
+
+
+
   async function onSubmitComentario(mensaje) {
     const postActualizado = await comentar(post, mensaje, usuario);
     setPost(postActualizado);
   }
+
+
+
   async function onSubmitLike() {
     if (enviandoLike) {
       return;
@@ -89,6 +96,7 @@ function Post({
   comentarios,
   caption,
   url,
+  title,
   usuario,
   estaLike,
   onSubmitLike,
@@ -96,18 +104,10 @@ function Post({
 }) {
   return (
 <>
-
-
-
-
-
-
-
-
-               <div class="col-lg-9">
+<div class="col-lg-9">
                     <div class="blog-item">
                         <div class="bi-pic">
-                            <img src={url} alt=""/>
+                            <img src={caption} alt=""/>
                         </div>
                         <div class="bi-text">
                             <div class="label">Typography</div>
@@ -130,7 +130,7 @@ function Post({
 }
 
 
-function Comentarios({ usuario, caption, comentarios }) {
+function Comments({ usuario, caption, comments }) {
   return (
     <ul className="Post__comentarios">
       <li className="Post__comentario">
@@ -142,15 +142,15 @@ function Comentarios({ usuario, caption, comentarios }) {
         </Link>{' '}
         {caption}
       </li>
-      {comentarios.map(comentario => (
-        <li className="Post__comentario" key={comentario._id}>
+      {comments.map(comment => (
+        <li className="Post__comentario" key={comment._id}>
           <Link
-            to={`/perfil/${comentario.usuario.username}`}
+            to={`/perfil/${comment.usuario.username}`}
             className="Post__autor-comentario"
           >
-            <b>{comentario.usuario.username}</b>
+            <b>{comment.usuario.username}</b>
           </Link>{' '}
-          {comentario.mensaje}
+          {comment.mensaje}
         </li>
       ))}
     </ul>

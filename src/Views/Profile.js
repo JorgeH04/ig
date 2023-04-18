@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import Main from '../Componentes/Main';
-import Loading from '../Componentes/Loading';
-import Grid from '../Componentes/Grid';
-import RecursoNoExiste from '../Componentes/RecursoNoExiste';
+import Main from '../Components/Main';
+import Loading from '../Components/Loading';
+import Grid from '../Components/Grid';
+import RecursoNoExiste from '../Components/RecursoNoExiste';
 import Axios from 'axios';
 import stringToColor from 'string-to-color';
 import toggleSiguiendo from '../Helpers/amistad-helpers';
 import useEsMobil from '../Hooks/useEsMobil';
 
 
-export default function Perfil({ mostrarError, usuario, match, logout }) {
+export default function Profile({ mostrarError, usuario, match, logout }) {
   const username = match.params.username;
-  const [usuarioDueñoDelPerfil, setUsuarioDueñoDelPerfil] = useState(null);
+  const [profileOwner, setProfileOwner] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [cargandoPerfil, setCargandoPefil] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [perfilNoExiste, setPerfilNoExiste] = useState(false);
   const [subiendoImagen, setSubiendoImagen] = useState(false);
   const [enviandoAmistad, setEnviandoAmistad] = useState(false);
@@ -23,19 +23,19 @@ export default function Perfil({ mostrarError, usuario, match, logout }) {
   useEffect(() => {
     async function cargarPostsYUsuario() {
       try {
-        setCargandoPefil(true);
-        const { data: usuario } = await Axios.get(`https://igback.herokuapp.com/api/usuarios/${username}`);
-        const { data: posts } = await Axios.get(
-          `https://igback.herokuapp.com/api/posts/usuario/${usuario._id}`
-        );
-
-        // const { data: usuario } = await Axios.get(`/api/usuarios/${username}`);
+        setLoading(true);
+        // const { data: usuario } = await Axios.get(`https://igback.herokuapp.com/api/usuarios/${username}`);
         // const { data: posts } = await Axios.get(
-        //   `/api/posts/usuario/${usuario._id}`
+        //   `https://igback.herokuapp.com/api/posts/usuario/${usuario._id}`
         // );
-        setUsuarioDueñoDelPerfil(usuario);
+
+        const { data: usuario } = await Axios.get(`/api/usuarios/${username}`);
+        const { data: posts } = await Axios.get(
+          `/api/posts/usuario/${usuario._id}`
+        );
+        setProfileOwner(usuario);
         setPosts(posts);
-        setCargandoPefil(false);
+        setLoading(false);
       } catch (error) {
         if (
           error.response &&
@@ -45,7 +45,7 @@ export default function Perfil({ mostrarError, usuario, match, logout }) {
         } else {
           mostrarError('Hubo un problema cargando este perfil.');
         }
-        setCargandoPefil(false);
+        setLoading(false);
       }
     }
     cargarPostsYUsuario();
@@ -53,11 +53,15 @@ export default function Perfil({ mostrarError, usuario, match, logout }) {
 
 
 
+
+
   function esElPerfilDeLaPersonaLogin() {
-    return usuario._id === usuarioDueñoDelPerfil._id;
+    return usuario._id === profileOwner._id;
   }
 
 
+
+  
   
   async function handleImagenSeleccionada(event) {
     try {
@@ -69,7 +73,7 @@ export default function Perfil({ mostrarError, usuario, match, logout }) {
         }
       };
       const { data } = await Axios.post('/api/usuarios/upload', file, config);
-      setUsuarioDueñoDelPerfil({ ...usuarioDueñoDelPerfil, imagen: data.url });
+      setProfileOwner({ ...profileOwner, imagen: data.url });
       setSubiendoImagen(false);
     } catch (error) {
       mostrarError(error.response.data);
@@ -85,8 +89,8 @@ export default function Perfil({ mostrarError, usuario, match, logout }) {
     }
     try {
       setEnviandoAmistad(true);
-      const usuarioActualizado = await toggleSiguiendo(usuarioDueñoDelPerfil);
-      setUsuarioDueñoDelPerfil(usuarioActualizado);
+      const usuarioActualizado = await toggleSiguiendo(profileOwner);
+      setProfileOwner(usuarioActualizado);
       setEnviandoAmistad(false);
     } catch (error) {
       mostrarError(
@@ -96,7 +100,7 @@ export default function Perfil({ mostrarError, usuario, match, logout }) {
       console.log(error);
     }
   }
-  if (cargandoPerfil) {
+  if (loading) {
     return (
       <Main center>
         <Loading />
@@ -116,35 +120,33 @@ export default function Perfil({ mostrarError, usuario, match, logout }) {
 
   return (
     <Main>
-
-
-<div className="Perfil">
-        <ImagenAvatar
+   <div className="Perfil">
+        <ImageAvatar
           esElPerfilDeLaPersonaLogin={esElPerfilDeLaPersonaLogin()}
-          usuarioDueñoDelPerfil={usuarioDueñoDelPerfil}
+          usuarioDueñoDelPerfil={profileOwner}
           handleImagenSeleccionada={handleImagenSeleccionada}
           subiendoImagen={subiendoImagen}
         />
         <div className="Perfil__bio-container">
           <div className="Perfil__bio-heading">
-            <h2 className="capitalize">{usuarioDueñoDelPerfil.username}</h2>
+            <h2 className="capitalize">{profileOwner.username}</h2>
             {!esElPerfilDeLaPersonaLogin() && (
-              <BotonSeguir
-                siguiendo={usuarioDueñoDelPerfil.siguiendo}
+              <FollowButton
+                siguiendo={profileOwner.siguiendo}
                 toggleSiguiendo={onToggleSiguiendo}
               />
             )}
-            {esElPerfilDeLaPersonaLogin() && <BotonLogout logout={logout} />}
+            {esElPerfilDeLaPersonaLogin() && <LogoutButton logout={logout} />}
           </div>
           {!esMobil && (
-            <DescripcionPerfil usuarioDueñoDelPerfil={usuarioDueñoDelPerfil} />
+            <DescripcionPerfil usuarioDueñoDelPerfil={profileOwner} />
           )}
         </div>
       </div>
 
 
       {esMobil && (
-        <DescripcionPerfil usuarioDueñoDelPerfil={usuarioDueñoDelPerfil} />
+        <DescripcionPerfil usuarioDueñoDelPerfil={profileOwner} />
       )}
 
  
@@ -155,29 +157,13 @@ export default function Perfil({ mostrarError, usuario, match, logout }) {
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="row">
 
-          {posts.length > 0 ? <Grid posts={posts} /> : <NoHaPosteadoFotos />}
-
-
-
+              {posts.length > 0 ? <Grid posts={posts} /> : <NoHaPosteadoFotos />}
 
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</section>
-
-
-
-
-
-
-
-
-
-
-
-
     </Main>
   );
 }
@@ -187,15 +173,20 @@ export default function Perfil({ mostrarError, usuario, match, logout }) {
 
 
 
-function DescripcionPerfil({ usuarioDueñoDelPerfil }) {
+
+
+
+
+
+function DescripcionPerfil({profileOwner}) {
   return (
     <div className="Perfil__descripcion">
-      <h2 className="Perfil__nombre">{usuarioDueñoDelPerfil.nombre}</h2>
-      <p>{usuarioDueñoDelPerfil.bio}</p>
+      <h2 className="Perfil__nombre">{profileOwner.nombre}</h2>
+      <p>{profileOwner.bio}</p>
       <p className="Perfil__estadisticas">
-        <b>{usuarioDueñoDelPerfil.numSiguiendo}</b> following
+        <b>{profileOwner.numSiguiendo}</b> following
         <span className="ml-4">
-          <b>{usuarioDueñoDelPerfil.numSeguidores}</b> followers
+          <b>{profileOwner.numSeguidores}</b> followers
         </span>
       </p>
     </div>
@@ -205,9 +196,16 @@ function DescripcionPerfil({ usuarioDueñoDelPerfil }) {
 
 
 
-function ImagenAvatar({
+
+
+
+
+
+
+
+function ImageAvatar({
   esElPerfilDeLaPersonaLogin,
-  usuarioDueñoDelPerfil,
+  profileOwner,
   handleImagenSeleccionada,
   subiendoImagen
 }) {
@@ -219,10 +217,10 @@ function ImagenAvatar({
       <label
         className="Perfil__img-placeholder Perfil__img-placeholder--pointer"
         style={{
-          backgroundImage: usuarioDueñoDelPerfil.imagen
-            ? `url(${usuarioDueñoDelPerfil.imagen})`
+          backgroundImage: profileOwner.imagen
+            ? `url(${profileOwner.imagen})`
             : null,
-          backgroundColor: stringToColor(usuarioDueñoDelPerfil.username)
+          backgroundColor: stringToColor(profileOwner.username)
         }}
       >
         <input
@@ -238,10 +236,10 @@ function ImagenAvatar({
       <div
         className="Perfil__img-placeholder"
         style={{
-          backgroundImage: usuarioDueñoDelPerfil.imagen
-            ? `url(${usuarioDueñoDelPerfil.imagen})`
+          backgroundImage: profileOwner.imagen
+            ? `url(${profileOwner.imagen})`
             : null,
-          backgroundColor: stringToColor(usuarioDueñoDelPerfil.username)
+          backgroundColor: stringToColor(profileOwner.username)
         }}
       />
     );
@@ -252,7 +250,13 @@ function ImagenAvatar({
 
 
 
-function BotonSeguir({ siguiendo, toggleSiguiendo }) {
+
+
+
+
+
+
+function FollowButton({ siguiendo, toggleSiguiendo }) {
   return (
     <button onClick={toggleSiguiendo} className="Perfil__boton-seguir">
       {siguiendo ? 'Dejar de seguir' : 'Seguir'}
@@ -264,13 +268,19 @@ function BotonSeguir({ siguiendo, toggleSiguiendo }) {
 
 
 
-function BotonLogout({ logout }) {
+
+
+
+
+function LogoutButton({ logout }) {
   return (
     <button className="Perfil__boton-logout" onClick={logout}>
       Logout
     </button>
   );
 }
+
+
 
 
 

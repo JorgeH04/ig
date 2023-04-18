@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Axios from 'axios';
-import Main from '../Componentes/Main';
-import Loading from '../Componentes/Loading';
-import Post from '../Componentes/Post';
+import Main from '../Components/Main';
+import Loading from '../Components/Loading';
+import Post from '../Components/Post';
 
 
 async function cargarPosts(fechaDelUltimoPost) {
   const query = fechaDelUltimoPost ? `?fecha=${fechaDelUltimoPost}` : '';
-  const { data: nuevosPosts } = await Axios.get(`https://igback.herokuapp.com/api/posts/feed${query}`);
-  //const { data: nuevosPosts } = await Axios.get(`/api/posts/feed${query}`);
+  //const { data: nuevosPosts } = await Axios.get(`https://igback.herokuapp.com/api/posts/feed${query}`);
+  const { data: nuevosPosts } = await Axios.get(`/api/posts/feed${query}`);
   return nuevosPosts;
 }
 
@@ -18,24 +18,24 @@ const NUMERO_DE_POSTS_POR_LLAMADA = 3;
 export default function Feed({ mostrarError, usuario }) {
 
   const [posts, setPosts] = useState([]);
-  const [cargandoPostIniciales, setCargandoPostIniciales] = useState(true);
-  const [cargandoMasPosts, setCargandoMasPosts] = useState(false);
+  const [loadingInitialPosts, setLoadingInitialPosts] = useState(true);
+  const [loadingMorePosts, setLoadingMorePosts] = useState(false);
   const [todosLosPostsCargados, setTodosLosPostsCargados] = useState(false);
 
   useEffect(() => {
-    async function cargarPostsIniciales() {
+    async function loadingInitialPosts() {
       try {
         const nuevosPosts = await cargarPosts();
         setPosts(nuevosPosts);
         console.log(nuevosPosts);
-        setCargandoPostIniciales(false);
+        setLoadingInitialPosts(false);
         revisarSiHayMasPosts(nuevosPosts);
       } catch (error) {
         mostrarError('Hubo un problema cargando tu feed.');
         console.log(error);
       }
     }
-    cargarPostsIniciales();
+    loadingInitialPosts();
   }, []);
 
 
@@ -53,19 +53,19 @@ export default function Feed({ mostrarError, usuario }) {
 
 
   async function cargarMasPosts() {
-    if (cargandoMasPosts) {
+    if (loadingMorePosts) {
       return;
     }
     try {
-      setCargandoMasPosts(true);
+      setLoadingMorePosts(true);
       const fechaDelUltimoPost = posts[posts.length - 1].fecha_creado;
       const nuevosPosts = await cargarPosts(fechaDelUltimoPost);
       setPosts(viejosPosts => [...viejosPosts, ...nuevosPosts]);
-      setCargandoMasPosts(false);
+      setLoadingMorePosts(false);
       revisarSiHayMasPosts(nuevosPosts);
     } catch (error) {
       mostrarError('Hubo un problema cargando los siguientes posts.');
-      setCargandoMasPosts(false);
+      setLoadingMorePosts(false);
     }
   }
 
@@ -79,14 +79,14 @@ export default function Feed({ mostrarError, usuario }) {
 
 
 
-  if (cargandoPostIniciales) {
+  if (loadingInitialPosts) {
     return (
       <Main center>
         <Loading />
       </Main>
     );
   }
-  if (!cargandoPostIniciales && posts.length === 0) {
+  if (!loadingInitialPosts && posts.length === 0) {
     return (
       <Main center>
         <NoSiguesANadie />
@@ -104,13 +104,13 @@ export default function Feed({ mostrarError, usuario }) {
             <div class="row justify-content-center">
                 <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
                 {posts.map(post => (
-                 <Post
-                 key={post._id}
-                 post={post}
-                 actualizarPost={actualizarPost}
-                 mostrarError={mostrarError}
-                 usuario={usuario}
-              />
+                   <Post
+                       key={post._id}
+                       post={post}
+                       actualizarPost={actualizarPost}
+                       mostrarError={mostrarError}
+                       usuario={usuario}
+                   />
              ))}
                <CargarMasPosts
                  onClick={cargarMasPosts}

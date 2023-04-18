@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import Main from '../Componentes/Main';
+import Main from '../Components/Main';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
-import Loading from '../Componentes/Loading';
+import Loading from '../Components/Loading';
 import Axios from 'axios';
 
 export default function Upload({ history, mostrarError }) {
-  const [imagenUrl, setImagenUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [subiendoImagen, setSubiendoImagen] = useState(false);
   const [enviandoPost, setEnviandoPost] = useState(false);
   const [title, setTitle] = useState('');
@@ -23,9 +23,9 @@ export default function Upload({ history, mostrarError }) {
           'Content-Type': file.type
         }
       };
-      const { data } = await Axios.post('https://igback.herokuapp.com/api/posts/upload', file, config);
-    //  const { data } = await Axios.post('/api/posts/upload', file, config);
-      setImagenUrl(data.url);
+    //  const { data } = await Axios.post('https://igback.herokuapp.com/api/posts/upload', file, config);
+      const { data } = await Axios.post('/api/posts/upload', file, config);
+      setImageUrl(data.url);
       setSubiendoImagen(false);
     } catch (error) {
       setSubiendoImagen(false);
@@ -39,26 +39,26 @@ export default function Upload({ history, mostrarError }) {
   
   async function handleSubmit(evento) {
     evento.preventDefault();
-    if (enviandoPost) {
-      return;
-    }
-    if (subiendoImagen) {
-      mostrarError('No se ha terminado de subir la imagen');
-      return;
-    }
-    if (!imagenUrl) {
-      mostrarError('Primero selecciona una imagen');
-      return;
-    }
+    // if (enviandoPost) {
+    //   return;
+    // }
+    // if (subiendoImagen) {
+    //   mostrarError('No se ha terminado de subir la imagen');
+    //   return;
+    // }
+    // if (!imagenUrl) {
+    //   mostrarError('Primero selecciona una imagen');
+    //   return;
+    // }
     try {
       setEnviandoPost(true);
       const body = {
         caption,
         title,
-        url: imagenUrl
+    //    url: imagenUrl
       };
-      await Axios.post('https://igback.herokuapp.com/api/posts', body);
-     // await Axios.post('/api/posts', body);
+      //await Axios.post('https://igback.herokuapp.com/api/posts', body);
+      await Axios.post('/api/posts', body);
       setEnviandoPost(false);
       history.push('/');
     } catch (error) {
@@ -69,15 +69,16 @@ export default function Upload({ history, mostrarError }) {
     <Main center>
       <div className="Upload">
         <form onSubmit={handleSubmit}>
-          <div className="Upload__image-section">
+        {/* <div className="Upload__image-section">
             <SeccionSubirImagen
               imagenUrl={imagenUrl}
               subiendoImagen={subiendoImagen}
               handleImagenSeleccionada={handleImagenSeleccionada}
             />
-          </div>
+          </div> */}
        
           <input 
+             className="Upload__caption"
              value={title}
              onChange={e => setTitle(e.target.value)}
           />
@@ -101,8 +102,6 @@ export default function Upload({ history, mostrarError }) {
     </Main>
   );
 }
-
-
 
 
 

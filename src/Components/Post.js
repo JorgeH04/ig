@@ -58,7 +58,7 @@ export default function Post({ post, actualizarPost, mostrarError, usuario }) {
                             </div>
                             <div class="post-featured-image mt-5">
                    
-                                <img src={url} class="img-fluid w-100" alt="featured-image"/>
+                                <img src={title} class="img-fluid w-100" alt="featured-image"/>
                             </div>
                         </div>
                         <div class="post-body">

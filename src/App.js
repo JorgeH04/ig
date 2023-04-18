@@ -9,21 +9,21 @@ import {
   initAxiosInterceptors
 } from './Helpers/auth-helpers';
 
-import Nav from './Componentes/Nav';
-//import Hero from './Componentes/Hero';
+import Nav from './Components/Nav';
+//import Hero from './Components/Hero';
 
-import Loading from './Componentes/Loading';
-import Error from './Componentes/Error';
-import Signup from './Vistas/Signup';
-import Login from './Vistas/Login';
-import Upload from './Vistas/Upload';
-import Feed from './Vistas/Feed';
-import Post from './Vistas/Post';
-import Explore from './Vistas/Explore';
-import Perfil from './Vistas/Perfil';
-import Footer from './Vistas/Footer/Footer';
+import Loading from './Components/Loading';
+import Error from './Components/Error';
+import Signup from './Views/Signup';
+import Login from './Views/Login';
+import Upload from './Views/Upload';
+import Feed from './Views/Feed';
+import Post from './Views/Post';
+import Explore from './Views/Explore';
+import Profile from './Views/Profile';
+import Footer from './Views/Footer/Footer';
 
-import Main from './Componentes/Main';
+import Main from './Components/Main';
 
 import { Helmet } from 'react-helmet';
 
@@ -46,7 +46,9 @@ export default function App() {
         return;
       }
       try {
-        const { data: usuario } = await Axios.get('https://igback.herokuapp.com/api/usuarios/whoami');
+      //  const { data: usuario } = await Axios.get('https://igback.herokuapp.com/api/usuarios/whoami');
+        const { data: usuario } = await Axios.get('/api/usuarios/whoami');
+
         setUsuario(usuario);
         setCargandoUsuario(false);
       } catch (error) {
@@ -61,7 +63,8 @@ export default function App() {
 
 
   async function login(email, password) {
-    const { data } = await Axios.post('https://igback.herokuapp.com/api/usuarios/login', {
+   // const { data } = await Axios.post('https://igback.herokuapp.com/api/usuarios/login', {
+   const { data } = await Axios.post('/api/usuarios/login', {
       email,
       password
     });
@@ -69,7 +72,8 @@ export default function App() {
     setToken(data.token);
   }
   async function signup(usuario) {
-    const { data } = await Axios.post('https://igback.herokuapp.com/api/usuarios/signup', usuario);
+   // const { data } = await Axios.post('https://igback.herokuapp.com/api/usuarios/signup', usuario);
+    const { data } = await Axios.post('/api/usuarios/signup', usuario);
     setUsuario(data.usuario);
     setToken(data.token);
   }
@@ -162,7 +166,7 @@ function LoginRoutes({ mostrarError, usuario, logout }) {
       <Route
         path="/perfil/:username"
         render={props => (
-          <Perfil
+          <Profile
             {...props}
             mostrarError={mostrarError}
             usuario={usuario}

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Main from '../Componentes/Main';
+import Main from '../Components/Main';
 import imagenSignup from '../imagenes/signup.png';         
 //import ErrorMsg from './ErrorMsg' 
 
 export default function Signup({ signup, mostrarError }) {
-  const [usuario, setUsuario] = useState({
+  const [user, setUser] = useState({
     email: '',
     username: '',
     password: '',
@@ -16,8 +16,8 @@ export default function Signup({ signup, mostrarError }) {
 
 
   function handleInputChange(e) {
-    setUsuario({
-      ...usuario,
+    setUser({
+      ...user,
       [e.target.name]: e.target.value
     });
   }
@@ -28,7 +28,7 @@ export default function Signup({ signup, mostrarError }) {
     e.preventDefault();
     
     try {
-      await signup(usuario);
+      await signup(user);
     } catch (error) {
       mostrarError(error.response.data);
      
@@ -69,7 +69,7 @@ export default function Signup({ signup, mostrarError }) {
               className="Form__field"
               required
               onChange={handleInputChange}
-              value={usuario.email}
+              value={user.email}
             />
             <input
               type="text"
@@ -80,7 +80,7 @@ export default function Signup({ signup, mostrarError }) {
               minLength="3"
               maxLength="100"
               onChange={handleInputChange}
-              value={usuario.nombre}
+              value={user.nombre}
             />
             <input
               type="text"
@@ -91,7 +91,7 @@ export default function Signup({ signup, mostrarError }) {
               minLength="3"
               maxLength="30"
               onChange={handleInputChange}
-              value={usuario.username}
+              value={user.username}
             />
             <input
               type="text"
@@ -101,7 +101,7 @@ export default function Signup({ signup, mostrarError }) {
               required
               maxLength="150"
               onChange={handleInputChange}
-              value={usuario.bio}
+              value={user.bio}
             />
             <input
               type="password"
@@ -110,7 +110,7 @@ export default function Signup({ signup, mostrarError }) {
               className="Form__field"
               required
               onChange={handleInputChange}
-              value={usuario.password}
+              value={user.password}
             />
             <button className="Form__submit" type="submit">
               Sign up
@@ -139,7 +139,7 @@ export default function Signup({ signup, mostrarError }) {
                             placeholder="Password" 
                             name="nombre"               
                             onChange={handleInputChange}
-                            value={usuario.nombre} 
+                            value={user.nombre} 
                             minLength="3"
                             maxLength="100"
                             />
@@ -149,7 +149,7 @@ export default function Signup({ signup, mostrarError }) {
                             placeholder="Password" 
                             name="nombre"               
                             onChange={handleInputChange}
-                            value={usuario.nombre} 
+                            value={user.nombre} 
                             minLength="3"
                             maxLength="100"
                             />    
@@ -161,7 +161,7 @@ export default function Signup({ signup, mostrarError }) {
                             required
                             maxLength="150"
                             onChange={handleInputChange}
-                            value={usuario.bio}
+                            value={user.bio}
                             />   
 
                           <input 
@@ -171,7 +171,7 @@ export default function Signup({ signup, mostrarError }) {
                             class="email_text" 
                             required
                             onChange={handleInputChange}
-                            value={usuario.password}
+                            value={user.password}
                             />   
                          <div class="send_bt"><a href="#">send</a></div>
                      </form>
